@@ -1,0 +1,297 @@
+{% extends "panel/base.html" %}
+{% block content %}
+<style>
+  .assign-container {
+    max-width: 800px;
+    margin: 40px auto;
+  }
+
+  .assign-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-header::before {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -50px;
+    right: -50px;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+  }
+
+  .header-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    display: inline-block;
+    animation: bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .card-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-header p {
+    margin: 10px 0 0 0;
+    opacity: 0.95;
+    font-size: 1.05rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-body {
+    padding: 50px;
+  }
+
+  .info-banner {
+    background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+    border-left: 4px solid #667eea;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .info-banner-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .info-banner-text {
+    color: #4c51bf;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .form-section {
+    background: #f8fafc;
+    padding: 35px;
+    border-radius: 15px;
+    border: 2px solid #e2e8f0;
+  }
+
+  .assign-form p {
+    margin-bottom: 30px;
+  }
+
+  .assign-form label {
+    display: block;
+    margin-bottom: 12px;
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .assign-form label::before {
+    content: '●';
+    color: #667eea;
+    font-size: 1.2rem;
+  }
+
+  .assign-form select,
+  .assign-form input[type="text"],
+  .assign-form input[type="email"] {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .assign-form select:focus,
+  .assign-form input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .assign-form select:hover,
+  .assign-form input:hover {
+    border-color: #a5b4fc;
+  }
+
+  .assign-form .helptext {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: #64748b;
+    padding-left: 20px;
+  }
+
+  .assign-form .errorlist {
+    list-style: none;
+    margin: 10px 0 0 0;
+    padding: 0;
+  }
+
+  .assign-form .errorlist li {
+    color: #e53e3e;
+    font-size: 0.9rem;
+    padding: 12px 16px;
+    background: #fff5f5;
+    border-left: 4px solid #fc8181;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .assign-form .errorlist li::before {
+    content: '⚠️';
+  }
+
+  .button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+  }
+
+  .assign-btn {
+    flex: 1;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .assign-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  }
+
+  .assign-btn:active {
+    transform: translateY(-1px);
+  }
+
+  .assign-btn::after {
+    content: '→';
+    font-size: 1.3rem;
+    transition: transform 0.3s ease;
+  }
+
+  .assign-btn:hover::after {
+    transform: translateX(5px);
+  }
+
+  .cancel-btn {
+    padding: 16px 32px;
+    background: white;
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cancel-btn:hover {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .card-body {
+      padding: 30px 25px;
+    }
+
+    .form-section {
+      padding: 25px 20px;
+    }
+
+    .button-group {
+      flex-direction: column;
+    }
+
+    .cancel-btn {
+      order: 2;
+    }
+  }
+</style>
+
+<div class="assign-container">
+  <div class="assign-card">
+    <div class="card-header">
+      <div class="header-icon">👥</div>
+      <h2>Assign User to Admin</h2>
+      <p>Grant administrative privileges to team members</p>
+    </div>
+
+    <div class="card-body">
+      <div class="info-banner">
+        <div class="info-banner-icon">💡</div>
+        <div class="info-banner-text">
+          <strong>Note:</strong> Assigning a user to an admin will grant them elevated permissions to manage tasks and team members within their scope.
+        </div>
+      </div>
+
+      <div class="form-section">
+        <form method="post" class="assign-form">
+          {% csrf_token %}
+          {{ form.as_p }}
+          
+          <div class="button-group">
+            <button type="submit" class="assign-btn">Assign User</button>
+            <a href="/panel/users/" class="cancel-btn">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

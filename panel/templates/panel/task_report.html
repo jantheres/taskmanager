@@ -1,0 +1,445 @@
+{% extends "panel/base.html" %}
+{% block content %}
+<style>
+  .report-container {
+    max-width: 1000px;
+    margin: 40px auto;
+  }
+
+  .report-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeInScale 0.6s ease-out;
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .report-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 45px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .report-header::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.7; }
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .task-id-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
+  }
+
+  .report-header h2 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .header-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+  }
+
+  .header-meta-icon {
+    font-size: 1.3rem;
+  }
+
+  .report-body {
+    padding: 50px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .info-box {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 25px;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .info-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+  }
+
+  .info-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e0;
+  }
+
+  .info-box:hover::before {
+    transform: scaleY(1);
+  }
+
+  .info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .info-label-icon {
+    font-size: 1.2rem;
+  }
+
+  .info-value {
+    color: #2d3748;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .status-badge.in-progress {
+    background: #dbeafe;
+    color: #1e3a8a;
+  }
+
+  .status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-badge.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .report-section {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 35px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .section-icon {
+    font-size: 2rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .section-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2d3748;
+    font-weight: 700;
+  }
+
+  .report-content {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 25px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #2d3748;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    border: 1px solid #e2e8f0;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .report-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .report-content::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 4px;
+  }
+
+  .report-content::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+  }
+
+  .hours-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .hours-icon {
+    font-size: 2.5rem;
+  }
+
+  .hours-text {
+    flex: 1;
+  }
+
+  .hours-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 5px;
+  }
+
+  .hours-value {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+  }
+
+  .action-btn {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+  }
+
+  .empty-report {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .report-header {
+      padding: 35px 30px;
+    }
+
+    .report-header h2 {
+      font-size: 1.6rem;
+    }
+
+    .report-body {
+      padding: 35px 25px;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .header-meta {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<div class="report-container">
+  <div class="report-card">
+    <div class="report-header">
+      <div class="header-content">
+        <div class="task-id-badge">Task #{{ task.id }}</div>
+        <h2>{{ task.title }}</h2>
+        <div class="header-meta">
+          <div class="header-meta-item">
+            <span class="header-meta-icon">📅</span>
+            <span>Created: {{ task.created_at|date:"M d, Y"|default:"N/A" }}</span>
+          </div>
+          <div class="header-meta-item">
+            <span class="header-meta-icon">🎯</span>
+            <span>Due: {{ task.due_date|date:"M d, Y"|default:"N/A" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-body">
+      <div class="info-grid">
+        <div class="info-box">
+          <div class="info-label">
+            <span class="info-label-icon">👤</span>
+            <span>Assigned To</span>
+          </div>
+          <div class="info-value">{{ task.assigned_to.username }}</div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">
+            <span class="info-label-icon">📊</span>
+            <span>Status</span>
+          </div>
+          <div class="info-value">
+            <span class="status-badge {{ task.status|lower }}">{{ task.status }}</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">
+            <span class="info-label-icon">⏱️</span>
+            <span>Worked Hours</span>
+          </div>
+          <div class="info-value">{{ task.worked_hours|default:"0" }} hrs</div>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <div class="section-header">
+          <span class="section-icon">📝</span>
+          <h3>Completion Report</h3>
+        </div>
+        {% if task.completion_report %}
+          <div class="report-content">{{ task.completion_report }}</div>
+        {% else %}
+          <div class="empty-report">
+            No completion report has been submitted yet.
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="action-buttons">
+        <a href="/panel/tasks/" class="action-btn btn-primary">
+          <span>←</span>
+          <span>Back to Tasks</span>
+        </a>
+        <a href="/panel/tasks/{{ task.id }}/edit/" class="action-btn btn-secondary">
+          <span>✏️</span>
+          <span>Edit Task</span>
+        </a>
+        <a href="javascript:window.print()" class="action-btn btn-secondary">
+          <span>🖨️</span>
+          <span>Print Report</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

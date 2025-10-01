@@ -1,0 +1,9 @@
+{% extends "panel/base.html" %}
+{% block content %}
+  <h2>Access Restricted</h2>
+  <p>You’re logged in as a regular user. The Admin Panel is for Admins and SuperAdmins only.</p>
+  <form action="{% url 'panel_logout' %}" method="post" style="display:inline-block; margin-top:10px;">
+    {% csrf_token %}
+    <button type="submit" class="btn">Logout and switch account</button>
+  </form>
+{% endblock %}

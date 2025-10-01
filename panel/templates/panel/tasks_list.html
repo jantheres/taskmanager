@@ -1,0 +1,465 @@
+{% extends "panel/base.html" %}
+{% block content %}
+<style>
+  .tasks-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+    gap: 20px;
+    animation: fadeInDown 0.5s ease-out;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .tasks-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .tasks-title h2 {
+    margin: 0;
+    font-size: 2.2rem;
+    color: #2d3748;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tasks-icon {
+    font-size: 2.5rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .tasks-count {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .create-task-btn {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .create-task-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+  }
+
+  .create-task-btn::before {
+    content: '➕';
+    font-size: 1.2rem;
+  }
+
+  .tasks-table-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .tasks-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tasks-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .tasks-table th {
+    padding: 20px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .tasks-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+  }
+
+  .tasks-table tbody tr:hover {
+    background: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .tasks-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .tasks-table td {
+    padding: 18px 16px;
+    color: #2d3748;
+    font-size: 0.95rem;
+  }
+
+  .task-id {
+    font-weight: 700;
+    color: #667eea;
+    font-size: 1rem;
+  }
+
+  .task-title {
+    font-weight: 600;
+    color: #2d3748;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .task-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .task-user::before {
+    content: '👤';
+    font-size: 1.2rem;
+  }
+
+  .task-status {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .task-status.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .task-status.in-progress {
+    background: #dbeafe;
+    color: #1e3a8a;
+  }
+
+  .task-status.completed {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .task-status.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .task-due {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #4a5568;
+  }
+
+  .task-due::before {
+    content: '📅';
+    font-size: 1.1rem;
+  }
+
+  .task-due.overdue {
+    color: #e53e3e;
+    font-weight: 600;
+  }
+
+  .task-due.overdue::before {
+    content: '⚠️';
+  }
+
+  .task-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .btn-edit {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    box-shadow: 0 4px 10px rgba(79, 172, 254, 0.3);
+  }
+
+  .btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(79, 172, 254, 0.4);
+  }
+
+  .btn-edit::before {
+    content: '✏️';
+  }
+
+  .btn-report {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+    box-shadow: 0 4px 10px rgba(67, 233, 123, 0.3);
+  }
+
+  .btn-report:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(67, 233, 123, 0.4);
+  }
+
+  .btn-report::before {
+    content: '📊';
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    color: #94a3b8;
+  }
+
+  .empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    font-size: 1.5rem;
+    color: #64748b;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+  }
+
+  .filter-bar {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-weight: 600;
+    color: #4a5568;
+  }
+
+  .filter-tag {
+    padding: 8px 16px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .filter-tag:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e0;
+  }
+
+  .filter-tag.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  @media (max-width: 1024px) {
+    .tasks-table {
+      display: block;
+      overflow-x: auto;
+    }
+
+    .tasks-table thead,
+    .tasks-table tbody,
+    .tasks-table tr,
+    .tasks-table td,
+    .tasks-table th {
+      display: block;
+    }
+
+    .tasks-table thead {
+      display: none;
+    }
+
+    .tasks-table tr {
+      margin-bottom: 15px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .tasks-table td {
+      padding: 10px;
+      text-align: left;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tasks-table td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    .task-actions {
+      justify-content: flex-end;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .tasks-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .tasks-title h2 {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+<div class="tasks-container">
+  <div class="tasks-header">
+    <div class="tasks-title">
+      <span class="tasks-icon">📋</span>
+      <div>
+        <h2>Tasks</h2>
+        <span class="tasks-count">{{ tasks|length }} task{{ tasks|length|pluralize }}</span>
+      </div>
+    </div>
+    <a class="create-task-btn" href="/panel/tasks/create/">Create Task</a>
+  </div>
+
+  <div class="tasks-table-container">
+    {% if tasks %}
+      <table class="tasks-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Assigned To</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tasks %}
+          <tr>
+            <td data-label="ID">
+              <span class="task-id">#{{ t.id }}</span>
+            </td>
+            <td data-label="Title">
+              <span class="task-title">{{ t.title }}</span>
+            </td>
+            <td data-label="Assigned To">
+              <span class="task-user">{{ t.assigned_to.username }}</span>
+            </td>
+            <td data-label="Status">
+              <span class="task-status {{ t.status|lower }}">{{ t.status }}</span>
+            </td>
+            <td data-label="Due Date">
+              <span class="task-due {% if t.is_overdue %}overdue{% endif %}">
+                {{ t.due_date|date:"M d, Y"|default:"N/A" }}
+              </span>
+            </td>
+            <td data-label="Actions">
+              <div class="task-actions">
+                <a class="action-btn btn-edit" href="/panel/tasks/{{ t.id }}/edit/">Edit</a>
+                {% if t.status == 'COMPLETED' %}
+                  <a class="action-btn btn-report" href="/panel/tasks/{{ t.id }}/report/">Report</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h3>No tasks yet</h3>
+        <p>Create your first task to get started!</p>
+        <a class="create-task-btn" href="/panel/tasks/create/">Create Task</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

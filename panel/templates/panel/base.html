@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Navigation Styles */
+    nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      animation: slideDown 0.5s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #4a5568;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+
+    nav a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: left 0.3s ease;
+      z-index: -1;
+      border-radius: 8px;
+    }
+
+    nav a:hover::before {
+      left: 0;
+    }
+
+    nav a:hover {
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white !important;
+    }
+
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+    }
+
+    /* Content Area */
+    .content {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 20px;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    th:first-child {
+      border-top-left-radius: 10px;
+    }
+
+    th:last-child {
+      border-top-right-radius: 10px;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #e2e8f0;
+      background: white;
+      transition: background 0.3s ease;
+    }
+
+    tr:hover td {
+      background: #f7fafc;
+    }
+
+    tr:last-child td:first-child {
+      border-bottom-left-radius: 10px;
+    }
+
+    tr:last-child td:last-child {
+      border-bottom-right-radius: 10px;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 4px 6px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 6px 12px rgba(245, 87, 108, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+      box-shadow: 0 4px 6px rgba(132, 250, 176, 0.3);
+    }
+
+    .btn-success:hover {
+      box-shadow: 0 6px 12px rgba(132, 250, 176, 0.4);
+    }
+
+    /* Welcome Section */
+    .welcome {
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+
+    .welcome h1 {
+      font-size: 2.5rem;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome p {
+      color: #718096;
+      font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .nav-links {
+        justify-content: center;
+      }
+
+      nav a {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      .welcome h1 {
+        font-size: 2rem;
+      }
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .badge-warning {
+      background: #feebc8;
+      color: #7c2d12;
+    }
+
+    .badge-danger {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="logo">📋 TaskManager</div>
+      <div class="nav-links">
+        <a href="/panel/">Dashboard</a>
+        
+        {% if user.is_authenticated %}
+          {% if user.role == 'SUPERADMIN' %}
+            <a href="/panel/users/">Users</a>
+            <a href="/panel/assign/">Assign User</a>
+          {% endif %}
+
+          {% if user.role == 'SUPERADMIN' or user.role == 'ADMIN' %}
+            <a href="/panel/tasks/">Tasks</a>
+          {% endif %}
+
+          <form action="{% url 'panel_logout' %}" method="post" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn">Logout</button>
+    </form>
+  {% else %}
+    <a href="{% url 'panel_login' %}">Login</a>
+  {% endif %}
+      </div>
+    </nav>
+
+    <div class="content">
+      {% block content %}
+      <div class="welcome">
+        <h1>Welcome to TaskManager</h1>
+        <p>Manage your tasks efficiently and effectively</p>
+      </div>
+      {% endblock %}
+    </div>
+  </div>
+</body>
+</html>
