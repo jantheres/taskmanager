@@ -38,11 +38,11 @@ View completion reports with worked hours
 
 Recommended demo credentials 
 
-SuperAdmin: admin / Admin@123
+SuperAdmin: admin Pass: Admin
 
-Admin: an_admin / Admin@123
+Admin: an_admin Pass: Admin1234
 
-User: jan@31 / User@123
+User: jan@31 Pass: Jan@31
 
 If you didn’t create these exact accounts, put the ones you used instead. You can also seed them quickly with:
 
