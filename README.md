@@ -1,11 +1,14 @@
 Task Management App (Django + DRF + JWT)
+
 Enhancement: When users complete a task, they must submit a short report and worked hours. Admins and SuperAdmins can review these reports via API and in a custom Admin Panel.
 
 Tech
+
 Django 5
 Django REST Framework
 SimpleJWT
 SQLite (default)
+
 Features
 Roles: SUPERADMIN, ADMIN, USER
 JWT auth for API
