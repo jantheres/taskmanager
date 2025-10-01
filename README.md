@@ -4,15 +4,21 @@ Enhancement: When users complete a task, they must submit a short report and wor
 Tech:
 
 Django 5
+
 Django REST Framework
+
 SimpleJWT
+
 SQLite (default)
 
 Features
+
 Roles: SUPERADMIN, ADMIN, USER
+
 JWT auth for API
 
 User APIs:
+
 GET /api/tasks/ → Only tasks for the logged-in user
 PUT /api/tasks/{id}/ → Update status; when status=COMPLETED, must include completion_report + worked_hours
 
