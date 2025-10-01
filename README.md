@@ -34,3 +34,34 @@ Admin:
 
 Manage tasks for their assigned users
 View completion reports with worked hours
+
+
+Recommended demo credentials (add to README)
+
+SuperAdmin: admin / Admin@123
+Admin: an_admin / Admin@123
+User: jan@31 / User@123
+If you didn’t create these exact accounts, put the ones you used instead. You can also seed them quickly with:
+
+python manage.py createsuperuser
+Or use the panel to create Admin/User and assign.
+
+
+Install
+
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+Migrate
+
+python manage.py makemigrations
+python manage.py migrate
+
+Create SuperAdmin
+
+python manage.py createsuperuser
+
+Run
+
+python manage.py runserver
