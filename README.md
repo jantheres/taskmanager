@@ -1,4 +1,5 @@
 Task Management App (Django + DRF + JWT)
+
 Enhancement: When users complete a task, they must submit a short report and worked hours. Admins and SuperAdmins can review these reports via API and in a custom Admin Panel.
 
 Tech:
