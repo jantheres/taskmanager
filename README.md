@@ -36,11 +36,14 @@ Manage tasks for their assigned users
 View completion reports with worked hours
 
 
-Recommended demo credentials (add to README)
+Recommended demo credentials 
 
 SuperAdmin: admin / Admin@123
+
 Admin: an_admin / Admin@123
+
 User: jan@31 / User@123
+
 If you didn’t create these exact accounts, put the ones you used instead. You can also seed them quickly with:
 
 python manage.py createsuperuser
